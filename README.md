@@ -1,10 +1,30 @@
 # Scientific QA LLM Fine-Tuning
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white" alt="PyTorch">
+  <img src="https://img.shields.io/badge/Transformers-FFD21E?style=flat-square&logo=huggingface&logoColor=black" alt="Hugging Face Transformers">
+  <img src="https://img.shields.io/badge/Datasets-FFD21E?style=flat-square&logo=huggingface&logoColor=black" alt="Hugging Face Datasets">
+  <img src="https://img.shields.io/badge/PEFT-FF9D00?style=flat-square&logo=huggingface&logoColor=black" alt="PEFT">
+  <img src="https://img.shields.io/badge/Accelerate-5C4EE5?style=flat-square&logo=huggingface&logoColor=white" alt="Accelerate">
+  <img src="https://img.shields.io/badge/bitsandbytes-76B900?style=flat-square&logo=nvidia&logoColor=white" alt="bitsandbytes">
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/Evaluate-4B8BBE?style=flat-square" alt="Hugging Face Evaluate">
+  <img src="https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas&logoColor=white" alt="pandas">
+  <img src="https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white" alt="NumPy">
+  <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikitlearn&logoColor=white" alt="scikit-learn">
+  <img src="https://img.shields.io/badge/Matplotlib-11557C?style=flat-square" alt="Matplotlib">
+  <img src="https://img.shields.io/badge/Seaborn-4C72B0?style=flat-square" alt="Seaborn">
+</p>
+
 For one part of my final-year project, I fine-tuned and evaluated 13 open language models on the QASPER scientific question-answering dataset. I used the same main data preparation and evaluation steps for every model so that the resulting artifacts could be compared consistently.
 
 ## Final-year project context
 
 This repository documents the multi-model fine-tuning task from my final-year project. I kept each experiment in its own directory, together with the notebook, aggregate metrics, and per-example evaluation records from the completed run.
+
+The methodology, preprocessing choices, metric definitions, model comparison, and limitations are documented in the [evaluation report](evaluation.md).
 
 ## What I worked on
 
@@ -80,6 +100,9 @@ scientific-qa-llm-finetuning/
 |   |-- qasper-<model>-train.ipynb
 |   |-- metrics.json
 |   `-- evaluation.json
+|-- scripts/
+|   `-- summarize_metrics.py
+|-- evaluation.md
 `-- README.md
 ```
 
@@ -102,10 +125,6 @@ To reproduce an experiment:
 5. Open the notebook for the selected model and run its cells in order.
 
 Do not commit access tokens to the repository.
-
-## Tools and libraries
-
-The notebooks use Python, PyTorch, Hugging Face Transformers, Datasets, PEFT, Accelerate, bitsandbytes, Evaluate, pandas, NumPy, scikit-learn, Matplotlib, and Seaborn.
 
 ## Outputs
 

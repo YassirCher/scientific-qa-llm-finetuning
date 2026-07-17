@@ -41,6 +41,32 @@ The model notebooks use the same main preparation steps, with small model-specif
 
 The training artifacts report 87.2% evidence coverage. Mean evidence recall after context packing ranges from 84.3% to 91.5% on training data and from 82.2% to 90.6% on validation data, depending on the model's prompt budget.
 
+## Training time and hyperparameters
+
+The configuration matrix below records the LoRA rank and alpha, learning rate, per-device batch size, and gradient accumulation used for each model.
+
+![Training configurations and hyperparameters](images/train_hyperparams.png)
+
+The saved training summaries provide the corresponding epoch counts and runtimes:
+
+| Model | Epochs | Training time | Learning rate | Batch | Grad. accum. | Effective batch | Max sequence |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `Mistral-7B-Instruct-v0.3` | 2 | 5h 40m | 2e-5 | 1 | 16 | 16 | 4,096 |
+| `Qwen2.5-7B-Instruct` | 3 | 8h 57m | 2e-5 | 2 | 8 | 16 | 1,024 |
+| `Llama-3.2-3B-Instruct` | 3 | 8h 26m | 1e-4 | 1 | 16 | 16 | 2,048 |
+| `GLM-Edge-4B-Chat` | 3 | 5h 57m | 2e-5 | 4 | 4 | 16 | 1,024 |
+| `DeepSeek-R1-Distill-Qwen-7B` | 3 | 7h 58m | 2e-5 | 2 | 8 | 16 | 1,024 |
+| `Arcee-Maestro-7B-Preview` | 3 | 7h 46m | 2e-5 | 2 | 8 | 16 | 1,024 |
+| `Gemma-3-4B-IT` | 2 | 3h 36m | 2e-5 | 4 | 4 | 16 | 768 |
+| `BitNet-b1.58-2B-4T-bf16` | 3 | 4h 22m | 2e-5 | 4 | 4 | 16 | 1,024 |
+| `Qwen3-4B` | 3 | 5h 19m | 2e-5 | 2 | 8 | 16 | 1,024 |
+| `SynLogic-7B` | 2 | 5h 12m | 2e-5 | 2 | 8 | 16 | 1,024 |
+| `SmolLM3-3B` | 3 | 4h 09m | 3e-5 | 4 | 4 | 16 | 1,024 |
+| `Phi-4-mini-instruct` | 3 | 4h 27m | 2e-5 | 2 | 8 | 16 | 1,024 |
+| `Olmo-3-7B-Instruct` | 3 | 7h 28m | 2e-5 | 2 | 8 | 16 | 1,024 |
+
+All runs use an effective batch size of 16, the same dataset preparation, and the same evaluation sample caps. Eleven of the thirteen models also use a learning rate of 2e-5, while most are trained for three epochs with a 1,024-token sequence limit. These shared settings establish a consistent experimental protocol for an appropriate comparison. The limited model-specific adjustments shown in the table account for architecture, memory use, and runtime stability; the experiments should therefore be viewed as a consistent practical comparison rather than a perfectly controlled hyperparameter ablation.
+
 ## Why the main sequence length is 1,024
 
 Ten of the thirteen runs use a maximum sequence length of 1,024. For those runs, approximately 824 tokens are reserved for packed paper context and about 200 tokens are left for the system message, question, answer prefix, and special tokens. Gemma uses 768, Llama 3.2 uses 2,048, and Mistral uses 4,096 because of model-specific memory and runtime choices. Mistral's saved prompt-context cap is still 1,024 tokens despite the larger maximum sequence length.

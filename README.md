@@ -91,6 +91,12 @@ The saved artifacts also cover several aspects of model behavior:
 
 The `metrics.json` files contain the run configuration, dataset statistics, training summary, validation metrics, test metrics, and training curve. The `evaluation.json` files contain the corresponding per-example predictions and supporting context.
 
+## Training configurations
+
+![Training configurations and hyperparameters](images/train_hyperparams.png)
+
+The experiments use the same main preprocessing pipeline, data splits, effective batch size of 16, and evaluation protocol. Batch size and gradient accumulation were adjusted together to preserve that effective batch size across models. A few model-specific values, such as sequence length, LoRA rank, learning rate, and epoch count, were adapted to architecture and memory constraints. This keeps the comparison consistent while allowing every model to train reliably on the available hardware. Training time and epoch details are listed in the [evaluation report](evaluation.md#training-time-and-hyperparameters).
+
 ## Repository structure
 
 ```text
@@ -98,6 +104,8 @@ scientific-qa-llm-finetuning/
 |-- eda/
 |   |-- qasper_eda.ipynb
 |   `-- reports/figures/
+|-- images/
+|   `-- train_hyperparams.png
 |-- <model-directory>/
 |   |-- qasper-<model>-train.ipynb
 |   |-- metrics.json

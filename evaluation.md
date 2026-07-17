@@ -55,14 +55,15 @@ This does not prove that 1,024 is universally optimal. It is the best practical 
 
 Generation evaluation is capped at 600 validation and 800 test examples for every model. The report below uses the test split.
 
-- **Exact match** requires the normalized prediction and reference to be identical.
-- **Token F1** measures token overlap and is more tolerant of wording differences.
-- **BLEU** is the corpus-level score returned by the saved evaluation pipeline.
-- **ROUGE-L** measures longest-common-subsequence overlap.
-- **BERTScore F1** measures semantic similarity with `distilbert-base-uncased`.
+- **Validation perplexity** measures how well the fine-tuned model predicts the reference answer tokens. Lower is better. It is calculated from the saved validation loss.
+- **BERTScore F1** is the main answer-similarity metric. It compares predictions and references in embedding space with `distilbert-base-uncased`, so it is less sensitive to exact wording than lexical metrics.
 - **Grounding rate** checks whether the answer appears in, or has strong lexical overlap with, the packed context.
 - **Abstention accuracy** measures whether unanswerable questions produce `INSUFFICIENT_CONTEXT`.
 - **Critical error rate** is the fraction of confident predictions that are wrong.
+
+Perplexity and semantic similarity are the two primary metrics in this report. Together, they indicate whether fine-tuning adapted a model to the answer distribution and whether its generated answer preserves the meaning of the reference. They are useful signals for this multi-hop scientific QA task, but they do not by themselves prove that a model followed the correct reasoning chain. Demonstrating that directly would require evidence-hop annotations or an evaluation of the intermediate reasoning path.
+
+Exact match, BLEU, token F1, and ROUGE-L were also calculated and remain available in the JSON artifacts. They are treated as secondary diagnostics here because Qasper can contain several valid answer phrasings, while its reference answers are often short. A semantically correct paraphrase can therefore receive a weak lexical-overlap score. These metrics are not hidden selectively by model; they are omitted from the headline table because the same limitation affects the whole comparison.
 
 The tables can be regenerated from the saved JSON files with:
 
@@ -70,25 +71,29 @@ The tables can be regenerated from the saved JSON files with:
 python scripts/summarize_metrics.py
 ```
 
-## Test-set quality metrics
+## Primary results
 
-The rows are ordered by token F1. BLEU is shown on its saved scale; the other quality values are percentages.
+The rows are ordered by test BERTScore F1. Perplexity is measured on the validation split and lower is better; BERTScore is measured on the test split and higher is better.
 
-| Model | Seq. | Exact match | Token F1 | BLEU | ROUGE-L | BERTScore F1 |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `Qwen/Qwen3-4B` | 1024 | 19.62% | 36.87% | 2.92 | 36.87% | 79.24% |
-| `Qwen/Qwen2.5-7B-Instruct` | 1024 | 20.50% | 36.64% | 2.27 | 36.80% | 79.67% |
-| `microsoft/Phi-4-mini-instruct` | 1024 | 19.62% | 36.60% | 2.59 | 36.44% | 79.86% |
-| `HuggingFaceTB/SmolLM3-3B` | 1024 | 20.50% | 34.86% | 1.55 | 35.09% | 78.80% |
-| `allenai/Olmo-3-7B-Instruct` | 1024 | 20.25% | 34.52% | 1.59 | 34.33% | 79.29% |
-| `meta-llama/Llama-3.2-3B-Instruct` | 2048 | 4.62% | 28.12% | 3.14 | 28.04% | 78.67% |
-| `MiniMaxAI/SynLogic-7B` | 1024 | 16.50% | 24.94% | 2.51 | 23.87% | 75.24% |
-| `google/gemma-3-4b-it` | 768 | 19.75% | 19.81% | 0.00 | 19.84% | 72.75% |
-| `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B` | 1024 | 3.38% | 19.55% | 3.09 | 19.35% | 75.00% |
-| `arcee-ai/Arcee-Maestro-7B-Preview` | 1024 | 2.38% | 18.69% | 2.24 | 18.06% | 74.75% |
-| `zai-org/glm-edge-4b-chat` | 1024 | 4.25% | 15.87% | 1.51 | 15.27% | 74.14% |
-| `mistralai/Mistral-7B-Instruct-v0.3` | 4096 | 0.00% | 0.38% | 0.00 | 0.38% | 66.74% |
-| `microsoft/bitnet-b1.58-2B-4T-bf16` | 1024 | 0.00% | 0.00% | 0.00 | 0.00% | 54.55% |
+| Model | Seq. | Validation perplexity | BERTScore F1 |
+| --- | ---: | ---: | ---: |
+| `microsoft/Phi-4-mini-instruct` | 1024 | 2.9195 | 79.86% |
+| `Qwen/Qwen2.5-7B-Instruct` | 1024 | 2.4866 | 79.67% |
+| `allenai/Olmo-3-7B-Instruct` | 1024 | 3.1485 | 79.29% |
+| `Qwen/Qwen3-4B` | 1024 | 2.6816 | 79.24% |
+| `HuggingFaceTB/SmolLM3-3B` | 1024 | 2.9033 | 78.80% |
+| `meta-llama/Llama-3.2-3B-Instruct` | 2048 | 4.4300 | 78.67% |
+| `MiniMaxAI/SynLogic-7B` | 1024 | 5.7265 | 75.24% |
+| `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B` | 1024 | 2.4340 | 75.00% |
+| `arcee-ai/Arcee-Maestro-7B-Preview` | 1024 | 2.4414 | 74.75% |
+| `zai-org/glm-edge-4b-chat` | 1024 | 2.5473 | 74.14% |
+| `google/gemma-3-4b-it` | 768 | 11.9141 | 72.75% |
+| `mistralai/Mistral-7B-Instruct-v0.3` | 4096 | 1.3307 | 66.74% |
+| `microsoft/bitnet-b1.58-2B-4T-bf16` | 1024 | 3.6556 | 54.55% |
+
+The strongest usable runs reach roughly 79% to 80% semantic similarity. Phi-4-mini has the highest BERTScore F1 at 79.86%, while Qwen2.5 combines a 79.67% BERTScore with a low validation perplexity of 2.4866. Qwen3, OLMo, and SmolLM3 are close behind. This is a good result for a difficult long-document task in which the model must select information from several parts of a scientific paper and return a concise answer.
+
+Perplexity must still be read alongside generation behavior. Mistral has the lowest value, 1.3307, but returns `INSUFFICIENT_CONTEXT` for 772 of 800 test records. Its low teacher-forced loss did not translate into usable generation. This is why the semantic score and failure indicators remain necessary.
 
 ## Grounding, abstention, and failure indicators
 
@@ -112,22 +117,22 @@ The rows are ordered by token F1. BLEU is shown on its saved scale; the other qu
 
 ### Strongest balanced group
 
-Qwen3-4B, Qwen2.5-7B-Instruct, Phi-4-mini, SmolLM3, and OLMo form the strongest group across exact match, token F1, ROUGE-L, BERTScore, and unanswerable-question handling.
+Qwen3-4B, Qwen2.5-7B-Instruct, Phi-4-mini, SmolLM3, and OLMo form the strongest group when semantic similarity, perplexity, and unanswerable-question handling are read together.
 
-- Qwen3-4B has the highest token F1 and ROUGE-L.
-- Qwen2.5 and SmolLM3 share the highest exact-match score. Qwen2.5 also has the lowest critical-error rate in this group.
-- Phi-4-mini has the highest BERTScore F1.
+- Phi-4-mini has the highest BERTScore F1 at 79.86%.
+- Qwen2.5 has the strongest balance between low validation perplexity and high semantic similarity. It also has the lowest critical-error rate in this group.
+- Qwen3, OLMo, and SmolLM3 all remain close to 79% BERTScore F1.
 - SmolLM3 and OLMo have the best abstention accuracy among the non-collapsed runs.
 
 The critical-error rates remain high, even for the strongest models. Their confidence scores should therefore not be used as calibrated probabilities without a separate calibration stage.
 
 ### Llama 3.2
 
-Llama 3.2 has the highest BLEU score and a high grounding rate, but its exact match and abstention accuracy are low. It often produces context-related text without matching the expected short-answer format or abstaining when the question is unanswerable.
+Llama 3.2 reaches 78.67% BERTScore F1 and has a high grounding rate, but its abstention accuracy is low. It often produces context-related text without following the expected short-answer or unanswerable-answer behavior.
 
 ### DeepSeek-R1-Distill-Qwen-7B
 
-DeepSeek produces some good individual indicators: its BLEU score is 3.09, its grounding rate is 89.12%, and it generates 610 unique answers. However, exact match is only 3.38%, token F1 is 19.55%, abstention accuracy is 1.90%, and 93.15% of its confident answers are wrong under the saved correctness rule.
+DeepSeek produces some good individual indicators: its validation perplexity is 2.4340, its BERTScore F1 is 75.00%, its grounding rate is 89.12%, and it generates 610 unique answers. Its 1.90% abstention accuracy and 93.15% critical-error rate nevertheless show that it does not follow the required answer behavior consistently.
 
 This pattern suggests a task-format mismatch. The checkpoint was distilled for explicit reasoning behavior, while Qasper supervision mostly contains short final answers without reasoning traces. A better use of this model would be fine-tuning on reasoning-oriented datasets, or on a mixed dataset that contains scientific questions together with supervised rationales and a clearly separated short final answer. The current metrics support this interpretation, but they do not prove that the architecture itself is unsuitable for scientific QA.
 
@@ -146,6 +151,6 @@ These cases point to tokenizer, padding, EOS handling, chat-template, or generat
 - The runs use different sequence lengths, epoch counts, and some model-specific settings, so the table is a practical experiment comparison rather than a controlled architecture benchmark.
 - Evaluation uses capped samples: 600 validation and 800 test records rather than every prepared row.
 - The grounding metric is lexical and can reward copied or degenerate text; it is not a factuality judge.
-- Exact match is strict for questions with several acceptable phrasings, while BERTScore can be generous to semantically related but incomplete answers. The metrics should be read together.
+- Perplexity measures reference-token prediction under teacher forcing, not the quality of free generation. BERTScore can also be generous to semantically related but incomplete answers. Neither metric verifies the intermediate evidence hops, so the behavior indicators and manual error analysis still matter.
 - The saved EDA output reports empty `evidence_text` lengths, while the training artifacts report 87.2% evidence coverage and high packed-evidence recall. This mismatch should be resolved by regenerating the EDA and training CSV files from one shared evidence-extraction path.
 - A controlled ablation is still needed for sequence length, context-ranking weight, LoRA rank, and confidence calibration.

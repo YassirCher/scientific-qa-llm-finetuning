@@ -24,7 +24,7 @@ For one part of my final-year project, I fine-tuned and evaluated 13 open langua
 
 This repository documents the multi-model fine-tuning task from my final-year project. I kept each experiment in its own directory, together with the notebook, aggregate metrics, and per-example evaluation records from the completed run.
 
-The methodology, preprocessing choices, metric definitions, model comparison, and limitations are documented in the [evaluation report](evaluation.md).
+The methodology, preprocessing choices, metric definitions, model comparison, and limitations are documented in the [evaluation report](evaluation.md). The main comparison uses validation perplexity and BERTScore semantic similarity, with generation-behavior checks to avoid rewarding collapsed outputs.
 
 ## What I worked on
 
@@ -76,7 +76,9 @@ Each model directory contains a notebook built around the same main stages:
 
 ## Evaluation
 
-The saved metrics cover several aspects of model behavior:
+The main comparison uses validation perplexity to measure adaptation to the answer distribution and BERTScore to measure semantic similarity between generated and reference answers. These are useful indicators for the multi-hop QA objective, although direct proof of the reasoning path would require evidence-hop evaluation.
+
+The saved artifacts also cover several aspects of model behavior:
 
 - Exact match and token-level precision, recall, F1, and accuracy
 - BLEU, ROUGE-L, and BERTScore

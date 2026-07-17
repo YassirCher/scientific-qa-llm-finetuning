@@ -24,6 +24,7 @@ def collect_rows() -> list[dict]:
     for metrics_path in sorted(ROOT.glob("*/metrics*.json")):
         payload = load_json(metrics_path)
         test_metrics = payload["test_metrics"]
+        training_summary = payload["training_summary"]
         config = payload["config"]
 
         evaluation_files = sorted(metrics_path.parent.glob("evaluation*.json"))
@@ -38,6 +39,9 @@ def collect_rows() -> list[dict]:
             {
                 "model": payload["model_id"],
                 "sequence_length": int(config["MAX_SEQ_LENGTH"]),
+                "validation_perplexity": float(
+                    training_summary["validation_perplexity"]
+                ),
                 "exact_match": float(test_metrics["exact_match"]),
                 "token_f1": float(test_metrics["token_f1"]),
                 "bleu": float(test_metrics["bleu"]),
@@ -54,17 +58,16 @@ def collect_rows() -> list[dict]:
                 "unique_answers": len(set(answers)),
             }
         )
-    return sorted(rows, key=lambda row: row["token_f1"], reverse=True)
+    return sorted(rows, key=lambda row: row["bertscore_f1"], reverse=True)
 
 
 def print_quality_table(rows: list[dict]) -> None:
-    print("| Model | Seq. | Exact match | Token F1 | BLEU | ROUGE-L | BERTScore F1 |")
-    print("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")
+    print("| Model | Seq. | Validation perplexity | BERTScore F1 |")
+    print("| --- | ---: | ---: | ---: |")
     for row in rows:
         print(
             f"| `{row['model']}` | {row['sequence_length']} "
-            f"| {percent(row['exact_match'])} | {percent(row['token_f1'])} "
-            f"| {row['bleu']:.2f} | {percent(row['rouge_l'])} "
+            f"| {row['validation_perplexity']:.4f} "
             f"| {percent(row['bertscore_f1'])} |"
         )
 

@@ -18,6 +18,10 @@ This repository documents the multi-model fine-tuning task from my final-year pr
 - Evaluating generated answers on the validation and test sets
 - Saving aggregate metrics and per-example evaluation records
 
+## Exploratory data analysis
+
+The EDA is available in `eda/qasper_eda.ipynb`. It downloads Qasper, converts the nested dataset into tabular files, checks missing values and noisy records, measures text and token lengths, and estimates context limits for training. The figures saved under `eda/reports/figures/` show the main distributions and data-quality checks used during preparation.
+
 ## Models
 
 | Directory | Hugging Face model |
@@ -69,6 +73,9 @@ The `metrics.json` files contain the run configuration, dataset statistics, trai
 
 ```text
 scientific-qa-llm-finetuning/
+|-- eda/
+|   |-- qasper_eda.ipynb
+|   `-- reports/figures/
 |-- <model-directory>/
 |   |-- qasper-<model>-train.ipynb
 |   |-- metrics.json

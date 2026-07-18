@@ -20,6 +20,8 @@
 
 For one part of my final-year project, I fine-tuned and evaluated 13 open language models on the QASPER scientific question-answering dataset. I used the same main data preparation and evaluation steps for every model so that the resulting artifacts could be compared consistently.
 
+> **Evaluation application:** The application used to evaluate and compare these fine-tuned LLMs was developed as another part of this project and is available in my separate repository: [YassirCher/rag-finetunning-eval-studio](https://github.com/YassirCher/rag-finetunning-eval-studio).
+
 ## Final-year project context
 
 This repository documents the multi-model fine-tuning task from my final-year project. I kept each experiment in its own directory, together with the notebook, aggregate metrics, and per-example evaluation records from the completed run.
